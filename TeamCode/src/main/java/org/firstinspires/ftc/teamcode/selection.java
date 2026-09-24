@@ -13,6 +13,7 @@ public class selection extends OpMode {
     public void loop(){
         boolean aButton = gamepad1.a;
         boolean bButton = gamepad1.b;
+        boolean xButton = gamepad1.x;
         if(aButton && bButton){
             telemetry.addData("A+B buttons", "Pressed!");
         }
