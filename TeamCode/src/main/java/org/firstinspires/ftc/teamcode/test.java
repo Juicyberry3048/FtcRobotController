@@ -17,7 +17,7 @@ public class test extends OpMode {
 
     public void loop()
     {
-
+//program NEEDS a loop and an init to work
     }
     //single line comment
 
