@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
+@Disabled
 @TeleOp
 public class BiobuzzTeleopBackup extends OpMode {
     private DcMotor FR; //port 0
@@ -21,7 +23,8 @@ public class BiobuzzTeleopBackup extends OpMode {
     private Servo nGate; //EH servo port 4
     private Servo pGate; //EH servo port 5
     private GoBildaPinpointDriver pinpoint; // EH I2C port 0
-
+    private double headingOffset = 0;
+    private boolean previousResetButton = false;
     private static final double MOTOR_TICKS_PER_REV = 28.0;
     @Override
     public void init() {
@@ -60,7 +63,21 @@ public class BiobuzzTeleopBackup extends OpMode {
 
         double pinpointX = pinpoint.getPosX(DistanceUnit.INCH);
         double pinpointY = pinpoint.getPosY(DistanceUnit.INCH);
-        double heading = pinpoint.getHeading(AngleUnit.DEGREES);
+        // Read raw Pinpoint heading
+        double rawHeading = pinpoint.getHeading(AngleUnit.DEGREES);
+
+// Read heading reset button
+        boolean resetButton = gamepad1.back;
+
+// Reset heading once per button press
+        if (resetButton && !previousResetButton) {
+            headingOffset = rawHeading;
+        }
+
+        previousResetButton = resetButton;
+
+// Calculate corrected heading
+        double heading = rawHeading - headingOffset;
 
         double x = -gamepad1.left_stick_x;
         double y = -gamepad1.left_stick_y;
