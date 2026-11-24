@@ -23,8 +23,6 @@ public class BiobuzzTeleopBackup extends OpMode {
     private Servo nGate; //EH servo port 4
     private Servo pGate; //EH servo port 5
     private GoBildaPinpointDriver pinpoint; // EH I2C port 0
-    private double headingOffset = 0;
-    private boolean previousResetButton = false;
     private static final double MOTOR_TICKS_PER_REV = 28.0;
     @Override
     public void init() {
@@ -125,6 +123,7 @@ public class BiobuzzTeleopBackup extends OpMode {
         telemetry.addData("X Position", pinpointX);
         telemetry.addData("Y Position", pinpointY);
         telemetry.addData("Heading", heading);
+        telemetry.addData("Reset Pressed", resetButton);
         telemetry.update();
     }
 }

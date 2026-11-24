@@ -19,8 +19,9 @@ public class BiobuzzTeleop extends OpMode {
     private Servo nGate; //EH servo port 4
     private Servo pGate; //EH servo port 5
     private GoBildaPinpointDriver pinpoint; // EH I2C port 0
-
     private static final double MOTOR_TICKS_PER_REV = 28.0;
+    private double headingOffset = 0;
+    private boolean previousResetButton = false;
     @Override
     public void init() {
         FR = hardwareMap.get(DcMotor.class, "FR");
@@ -58,7 +59,21 @@ public class BiobuzzTeleop extends OpMode {
 
         double pinpointX = pinpoint.getPosX(DistanceUnit.INCH);
         double pinpointY = pinpoint.getPosY(DistanceUnit.INCH);
-        double heading = pinpoint.getHeading(AngleUnit.DEGREES);
+        // Read raw Pinpoint heading
+        double rawHeading = pinpoint.getHeading(AngleUnit.DEGREES);
+
+// Read heading reset button
+        boolean resetButton = gamepad1.y;
+
+// Reset heading once per button press
+        if (resetButton && !previousResetButton) {
+            headingOffset = rawHeading;
+        }
+
+        previousResetButton = resetButton;
+
+// Calculate corrected heading
+        double heading = rawHeading - headingOffset;
 
         // Read controller inputs - start of chatgpt code
         double x = -gamepad1.left_stick_x;
@@ -135,7 +150,9 @@ public class BiobuzzTeleop extends OpMode {
         }
         telemetry.addData("X Position", pinpointX);
         telemetry.addData("Y Position", pinpointY);
-        telemetry.addData("Heading", heading);
+        telemetry.addData("Raw Heading", rawHeading);
+        telemetry.addData("Heading Offset", headingOffset);
+        telemetry.addData("Corrected Heading", heading);
         telemetry.update();
     }
 }
